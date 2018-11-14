@@ -28,6 +28,7 @@ func main() {
 	projects, _, err := client.Projects.ListAll()
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
+		os.Exit(1)
 	}
 
 	for i, project := range projects {
