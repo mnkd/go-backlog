@@ -99,7 +99,7 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 		// If the error type is *url.Error, sanitize its URL before returning.
 		if e, ok := err.(*url.Error); ok {
 			if url, err := url.Parse(e.URL); err == nil {
-				e.URL = url.String()
+				e.URL = sanitizeURL(url).String()
 				return nil, e
 			}
 		}
@@ -148,5 +148,19 @@ type ErrorResponse struct {
 
 func (r *ErrorResponse) Error() string {
 	return fmt.Sprintf("%v %v: %d %v",
-		r.Response.Request.Method, r.Response.Request.URL, r.Response.StatusCode, r.Message)
+		r.Response.Request.Method, sanitizeURL(r.Response.Request.URL), r.Response.StatusCode, r.Message)
+}
+
+// sanitizeURL redacts the apiKey parameter from the URL which may be exposed to the user.
+func sanitizeURL(uri *url.URL) *url.URL {
+	fmt.Println("sanitizeURL:", uri.String())
+	if uri == nil {
+		return nil
+	}
+	params := uri.Query()
+	if len(params.Get("apiKey")) > 0 {
+		params.Set("apiKey", "REDACTED")
+		uri.RawQuery = params.Encode()
+	}
+	return uri
 }
