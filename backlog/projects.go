@@ -106,7 +106,7 @@ func (s *ProjectsService) CreateCategory(projectKey string, categoryName string)
 	v := url.Values{}
 	v.Set("name", categoryName)
 
-	req, err := s.client.NewRequest("POST", u, v)
+	req, err := s.client.NewRequest("POST", u, &v)
 	if err != nil {
 		return nil, nil, err
 	}
