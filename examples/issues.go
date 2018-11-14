@@ -32,7 +32,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Printf("%v %v\n", issue.Summary, issue.IssueKey)
+	fmt.Printf("%v %v %v\n", issue.Summary, issue.IssueKey, issue.Status.Name)
 
 	issueComment, _, err := client.Issues.CreateComment(issue.IssueKey, "Apple")
 	if err != nil {

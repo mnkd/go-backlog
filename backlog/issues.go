@@ -24,6 +24,11 @@ type Issue struct {
 	StartDate   time.Time `json:"startDate"`
 	DueDate     time.Time `json:"dueDate"`
 
+	Status struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+	} `json:"status"`
+
 	Assignee struct {
 		ID   int    `json:"id"`
 		Name string `json:"name"`
