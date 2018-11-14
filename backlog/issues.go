@@ -72,6 +72,21 @@ func (s *IssuesService) Create(request IssueRequest) (*Issue, *Response, error) 
 	return issue, resp, nil
 }
 
+// Delete delete an issue
+func (s *IssuesService) Delete(issueKey string) (*Response, error) {
+	u := "issues/" + issueKey
+	req, err := s.client.NewRequest("DELETE", u, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := s.client.Do(req, nil)
+	if err != nil {
+		return resp, err
+	}
+	return resp, nil
+}
+
 func (r IssueRequest) makeValues() url.Values {
 	v := url.Values{}
 	v.Set("projectId", fmt.Sprintf("%d", r.ProjectID))
