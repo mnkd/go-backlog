@@ -1,21 +1,38 @@
 package backlog
 
+import "net/url"
+
+// ProjectsService is
 type ProjectsService service
 
-// Project is Backlog project
+// Project is Backlog project in the Backlog space
 type Project struct {
 	ID         int64  `json:"id"`
 	Name       string `json:"name"`
 	ProjectKey string `json:"projectKey"`
 }
 
-// IssueType is Backlog issueType
+// IssueType is Backlog issueType in the Backlog project
 type IssueType struct {
 	ID           int64  `json:"id"`
 	Name         string `json:"name"`
 	ProjectID    int64  `json:"projectId"`
 	Color        string `json:"color"`
 	DisplayOrder int64  `json:"displayOrder"`
+}
+
+// Category is Backlog category in the Backlog project
+type Category struct {
+	ID         int64  `json:"id"`
+	Name       string `json:"name"`
+	ProjectKey string `json:"projectKey"`
+}
+
+// User is Backlog user
+type User struct {
+	ID     int64  `json:"id"`
+	Name   string `json:"name"`
+	UserID string `json:"userId"`
 }
 
 // ListAll lists all projects.
@@ -48,4 +65,107 @@ func (s *ProjectsService) ListIssueTypes(projectKey string) ([]*IssueType, *Resp
 		return nil, resp, err
 	}
 	return types, resp, nil
+}
+
+// ListCategories lists all issueTypes.
+func (s *ProjectsService) ListCategories(projectKey string) ([]*Category, *Response, error) {
+	u := "projects/" + projectKey + "/categories"
+	req, err := s.client.NewRequest("GET", u, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	categories := []*Category{}
+	resp, err := s.client.Do(req, &categories)
+	if err != nil {
+		return nil, resp, err
+	}
+	return categories, resp, nil
+}
+
+// ListProjectUsers lists all users in the project.
+func (s *ProjectsService) ListProjectUsers(projectKey string) ([]*User, *Response, error) {
+	u := "projects/" + projectKey + "/users"
+	req, err := s.client.NewRequest("GET", u, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	users := []*User{}
+	resp, err := s.client.Do(req, &users)
+	if err != nil {
+		return nil, resp, err
+	}
+	return users, resp, nil
+}
+
+// CreateCategory creates a new category in the project.
+func (s *ProjectsService) CreateCategory(projectKey string, categoryName string) (*Category, *Response, error) {
+	u := "projects/" + projectKey + "/categories"
+
+	v := url.Values{}
+	v.Set("name", categoryName)
+
+	req, err := s.client.NewRequest("POST", u, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	category := new(Category)
+	resp, err := s.client.Do(req, &category)
+	if err != nil {
+		return nil, resp, err
+	}
+	return category, resp, nil
+}
+
+// DeleteCategory deletes a category in the project.
+func (s *ProjectsService) DeleteCategory(projectKey string, categoryID string) (*Response, error) {
+	u := "projects/" + projectKey + "/categories/" + categoryID
+	req, err := s.client.NewRequest("DELETE", u, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := s.client.Do(req, nil)
+	if err != nil {
+		return resp, err
+	}
+	return resp, nil
+}
+
+// CreateIssueType creates a new category in the project.
+func (s *ProjectsService) CreateIssueType(projectKey string, name string, color string) (*IssueType, *Response, error) {
+	u := "projects/" + projectKey + "/issueTypes"
+
+	v := url.Values{}
+	v.Set("name", name)
+	v.Set("color", color)
+
+	req, err := s.client.NewRequest("POST", u, &v)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	issueType := new(IssueType)
+	resp, err := s.client.Do(req, &issueType)
+	if err != nil {
+		return nil, resp, err
+	}
+	return issueType, resp, nil
+}
+
+// DeleteIssueType deletes a category in the project.
+func (s *ProjectsService) DeleteIssueType(projectKey string, issueTypeID string) (*Response, error) {
+	u := "projects/" + projectKey + "/issueTypes/" + issueTypeID
+	req, err := s.client.NewRequest("DELETE", u, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := s.client.Do(req, nil)
+	if err != nil {
+		return resp, err
+	}
+	return resp, nil
 }

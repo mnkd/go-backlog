@@ -19,7 +19,9 @@ type Client struct {
 	apiKey  string
 
 	// Services
+	Space    *SpaceService
 	Projects *ProjectsService
+	Issues   *IssuesService
 }
 
 type service struct {
@@ -35,7 +37,9 @@ func NewClient(httpClient *http.Client, space string, apiKey string) *Client {
 	baseURL, _ := url.Parse("https://" + space + ".backlog.com/api/v2/")
 	c := &Client{client: httpClient, BaseURL: baseURL, apiKey: apiKey}
 	c.common.client = c
+	c.Space = (*SpaceService)(&c.common)
 	c.Projects = (*ProjectsService)(&c.common)
+	c.Issues = (*IssuesService)(&c.common)
 	return c
 }
 

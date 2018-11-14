@@ -38,8 +38,29 @@ func main() {
 			fmt.Printf("Error: %v\n", err)
 		}
 
-		for j, issueType := range issueTypes {
-			fmt.Printf("%v. %v (%v)\n", j+1, issueType.Name, issueType.Color)
+		fmt.Printf("IssueTypes: \n")
+		for _, issueType := range issueTypes {
+			fmt.Printf("  %v (%v)\n", issueType.Name, issueType.Color)
+		}
+
+		categories, _, err := client.Projects.ListCategories(project.ProjectKey)
+		if err != nil {
+			fmt.Printf("Error: %v\n", err)
+		}
+
+		fmt.Printf("Categories: \n")
+		for _, category := range categories {
+			fmt.Printf("  %v\n", category.Name)
+		}
+
+		users, _, err := client.Projects.ListProjectUsers(project.ProjectKey)
+		if err != nil {
+			fmt.Printf("Error: %v\n", err)
+		}
+
+		fmt.Printf("Users: \n")
+		for _, user := range users {
+			fmt.Printf("  %v\n", user.Name)
 		}
 	}
 }
