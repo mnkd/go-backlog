@@ -84,7 +84,7 @@ func (s *ProjectsService) ListCategories(projectKey string) ([]*Category, *Respo
 }
 
 // ListProjectUsers lists all users in the project.
-func (s *ProjectsService) ListProjectUsers(projectKey string) ([]*User, *Response, error) {
+func (s *ProjectsService) ListUsers(projectKey string) ([]*User, *Response, error) {
 	u := "projects/" + projectKey + "/users"
 	req, err := s.client.NewRequest("GET", u, nil)
 	if err != nil {
