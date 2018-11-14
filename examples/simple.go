@@ -54,7 +54,7 @@ func main() {
 			fmt.Printf("  %v\n", category.Name)
 		}
 
-		users, _, err := client.Projects.ListProjectUsers(project.ProjectKey)
+		users, _, err := client.Projects.ListUsers(project.ProjectKey)
 		if err != nil {
 			fmt.Printf("Error: %v\n", err)
 		}
