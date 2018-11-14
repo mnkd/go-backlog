@@ -11,10 +11,10 @@ type IssuesService service
 
 // Issue is Backlog issue
 type Issue struct {
-	ID          int64     `json:"id"`
-	ProjectID   int64     `json:"projectId"`
+	ID          int       `json:"id"`
+	ProjectID   int       `json:"projectId"`
 	IssueKey    string    `json:"issueKey"`
-	KeyID       int64     `json:"keyId"`
+	KeyID       int       `json:"keyId"`
 	Summary     string    `json:"summary"`
 	Description string    `json:"description"`
 	Priority    Priority  `json:"priority"`
@@ -25,12 +25,12 @@ type Issue struct {
 	DueDate     time.Time `json:"dueDate"`
 
 	Assignee struct {
-		ID   int64  `json:"id"`
+		ID   int    `json:"id"`
 		Name string `json:"name"`
 	} `json:"assignee"`
 
 	CreatedUser struct {
-		ID     int64  `json:"id"`
+		ID     int    `json:"id"`
 		UserID string `json:"userId"`
 		Name   string `json:"name"`
 	} `json:"createdUser"`
@@ -41,18 +41,33 @@ type Issue struct {
 
 // IssueRequest represents a request to create/edit an issue.
 type IssueRequest struct {
-	Summary       string
-	Description   string
-	ProjectID     int
-	PriorityID    int
-	CategoryID    int
-	IssueTypeID   int
-	CategoryIDs   []int
+	Summary       *string
+	Description   *string
+	StatusID      *int
+	ProjectID     *int
+	PriorityID    *int
+	CategoryID    *int
+	IssueTypeID   *int
 	AssigneeID    *int
 	ParentIssueID *int
-	State         *string
 	StartDate     *string
 	DueDate       *string
+}
+
+// Get an issue.
+func (s *IssuesService) Get(issueKey string) (*Issue, *Response, error) {
+	u := "issues/" + issueKey
+	req, err := s.client.NewRequest("GET", u, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	issue := new(Issue)
+	resp, err := s.client.Do(req, &issue)
+	if err != nil {
+		return nil, resp, err
+	}
+	return issue, resp, nil
 }
 
 // Create creates an issue
@@ -72,7 +87,24 @@ func (s *IssuesService) Create(request IssueRequest) (*Issue, *Response, error) 
 	return issue, resp, nil
 }
 
-// Delete delete an issue
+// Edit an issue
+func (s *IssuesService) Edit(issueKey string, request IssueRequest) (*Issue, *Response, error) {
+	u := "issues/" + issueKey
+	v := request.makeValues()
+	req, err := s.client.NewRequest("PATCH", u, &v)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	issue := new(Issue)
+	resp, err := s.client.Do(req, &issue)
+	if err != nil {
+		return nil, resp, err
+	}
+	return issue, resp, nil
+}
+
+// Delete an issue
 func (s *IssuesService) Delete(issueKey string) (*Response, error) {
 	u := "issues/" + issueKey
 	req, err := s.client.NewRequest("DELETE", u, nil)
@@ -89,13 +121,27 @@ func (s *IssuesService) Delete(issueKey string) (*Response, error) {
 
 func (r IssueRequest) makeValues() url.Values {
 	v := url.Values{}
-	v.Set("projectId", fmt.Sprintf("%d", r.ProjectID))
-	v.Set("issueTypeId", fmt.Sprintf("%d", r.IssueTypeID))
-	v.Set("priorityId", fmt.Sprintf("%d", r.PriorityID))
-	v.Set("categoryId[]", fmt.Sprintf("%d", r.CategoryID))
-	v.Set("summary", r.Summary)
-	v.Set("description", r.Description)
-
+	if r.ProjectID != nil {
+		v.Set("projectId", fmt.Sprintf("%d", *r.ProjectID))
+	}
+	if r.IssueTypeID != nil {
+		v.Set("issueTypeId", fmt.Sprintf("%d", *r.IssueTypeID))
+	}
+	if r.StatusID != nil {
+		v.Set("statusId", fmt.Sprintf("%d", *r.StatusID))
+	}
+	if r.PriorityID != nil {
+		v.Set("priorityId", fmt.Sprintf("%d", *r.PriorityID))
+	}
+	if r.CategoryID != nil {
+		v.Set("categoryId[]", fmt.Sprintf("%d", *r.CategoryID))
+	}
+	if r.Summary != nil {
+		v.Set("summary", *r.Summary)
+	}
+	if r.Description != nil {
+		v.Set("description", *r.Description)
+	}
 	if r.ParentIssueID != nil {
 		v.Set("parentIssueId", fmt.Sprintf("%d", *r.ParentIssueID))
 	}
