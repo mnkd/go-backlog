@@ -156,9 +156,16 @@ func (s *ProjectsService) CreateIssueType(projectKey string, name string, color 
 }
 
 // DeleteIssueType deletes a category in the project.
-func (s *ProjectsService) DeleteIssueType(projectKey string, issueTypeID string) (*Response, error) {
+//
+// substituteIssueTypeID: 付け替え先の種別 ID。Backlog の仕様上、最低 1 個の種別を残す必要あり。
+func (s *ProjectsService) DeleteIssueType(projectKey string, issueTypeID string, substituteIssueTypeID string) (*Response, error) {
 	u := "projects/" + projectKey + "/issueTypes/" + issueTypeID
-	req, err := s.client.NewRequest("DELETE", u, nil)
+
+	// substituteIssueTypeId (必須) 数値 紐づく課題を付け替える先の種別のID
+	v := url.Values{}
+	v.Set("substituteIssueTypeId", substituteIssueTypeID)
+
+	req, err := s.client.NewRequest("DELETE", u, &v)
 	if err != nil {
 		return nil, err
 	}
