@@ -7,30 +7,30 @@ type ProjectsService service
 
 // Project is Backlog project in the Backlog space
 type Project struct {
-	ID         int64  `json:"id"`
+	ID         int    `json:"id"`
 	Name       string `json:"name"`
 	ProjectKey string `json:"projectKey"`
 }
 
 // IssueType is Backlog issueType in the Backlog project
 type IssueType struct {
-	ID           int64  `json:"id"`
+	ID           int    `json:"id"`
 	Name         string `json:"name"`
-	ProjectID    int64  `json:"projectId"`
+	ProjectID    int    `json:"projectId"`
 	Color        string `json:"color"`
-	DisplayOrder int64  `json:"displayOrder"`
+	DisplayOrder int    `json:"displayOrder"`
 }
 
 // Category is Backlog category in the Backlog project
 type Category struct {
-	ID         int64  `json:"id"`
+	ID         int    `json:"id"`
 	Name       string `json:"name"`
 	ProjectKey string `json:"projectKey"`
 }
 
 // User is Backlog user
 type User struct {
-	ID     int64  `json:"id"`
+	ID     int    `json:"id"`
 	Name   string `json:"name"`
 	UserID string `json:"userId"`
 }

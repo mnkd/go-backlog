@@ -5,7 +5,7 @@ type SpaceService service
 
 // Priority is Backlog priority in the Backlog space
 type Priority struct {
-	ID   int64  `json:"id"`
+	ID   int    `json:"id"`
 	Name string `json:"name"`
 }
 
