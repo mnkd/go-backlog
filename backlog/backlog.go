@@ -153,7 +153,6 @@ func (r *ErrorResponse) Error() string {
 
 // sanitizeURL redacts the apiKey parameter from the URL which may be exposed to the user.
 func sanitizeURL(uri *url.URL) *url.URL {
-	fmt.Println("sanitizeURL:", uri.String())
 	if uri == nil {
 		return nil
 	}
