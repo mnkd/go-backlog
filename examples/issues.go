@@ -42,7 +42,7 @@ func main() {
 
 	fmt.Printf("%v %v\n", issueComment.Content, issueComment.CreatedUser.Name)
 
-	comments, _, err := client.Issues.ListComments(issue.IssueKey)
+	comments, _, err := client.Issues.ListComments(issue.IssueKey, "asc")
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
 		os.Exit(1)
