@@ -31,8 +31,9 @@ type ChangeLog struct {
 // ListComments lists all issue comments.
 //
 // https://developer.nulab-inc.com/ja/docs/backlog/api/2/get-comment-list/
-func (s *IssuesService) ListComments(issueKey string) ([]*IssueComment, *Response, error) {
-	u := "issues/" + issueKey + "/comments"
+// order: "asc" or "desc"
+func (s *IssuesService) ListComments(issueKey string, order string) ([]*IssueComment, *Response, error) {
+	u := "issues/" + issueKey + "/comments?order=" + order
 	req, err := s.client.NewRequest("GET", u, nil)
 	if err != nil {
 		return nil, nil, err
