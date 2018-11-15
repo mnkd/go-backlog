@@ -111,10 +111,6 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 
 	err = CheckResponse(resp)
 	if err != nil {
-		_, readErr := ioutil.ReadAll(resp.Body)
-		if readErr != nil {
-			return response, readErr
-		}
 		return response, err
 	}
 
@@ -137,18 +133,38 @@ func CheckResponse(r *http.Response) error {
 		return nil
 	}
 	errorResponse := &ErrorResponse{Response: r}
+	data, err := ioutil.ReadAll(r.Body)
+	if err == nil && data != nil {
+		json.Unmarshal(data, errorResponse)
+	}
 	return errorResponse
 }
 
 // An ErrorResponse reports one or more errors caused by an API request.
 type ErrorResponse struct {
 	Response *http.Response // HTTP response that caused this error
-	Message  string         `json:"message"` // error message
+	Errors   []Error        `json:"errors"` // more detail on individual errors
 }
 
 func (r *ErrorResponse) Error() string {
-	return fmt.Sprintf("%v %v: %d %v",
-		r.Response.Request.Method, sanitizeURL(r.Response.Request.URL), r.Response.StatusCode, r.Message)
+	return fmt.Sprintf("%v %v: %d\nErros:\n%v\n",
+		r.Response.Request.Method, sanitizeURL(r.Response.Request.URL),
+		r.Response.StatusCode, r.moreDetail())
+}
+
+func (r *ErrorResponse) moreDetail() string {
+	s := ""
+	for _, e := range r.Errors {
+		s += fmt.Sprintf("  code:%v, message:%v, info:%v\n", e.Code, e.Message, e.MoreInfo)
+	}
+	return s
+}
+
+// An Error reports more details on an individual error in an ErrorResponse.
+type Error struct {
+	Message  string `json:"message"`
+	Code     int    `json:"code"`
+	MoreInfo string `json:"moreInfo"`
 }
 
 // sanitizeURL redacts the apiKey parameter from the URL which may be exposed to the user.
