@@ -59,6 +59,27 @@ type IssueRequest struct {
 	DueDate       *string
 }
 
+// IssueSearchRequest represents a request to create/edit an issue.
+// https://developer.nulab-inc.com/ja/docs/backlog/api/2/get-issue-list/
+type IssueSearchRequest struct {
+	IDs            []int   `url:"id[],omitempty"`             // 課題のID
+	ProjectIDs     []int   `url:"projectId[],omitempty"`      // プロジェクトのID
+	StatusIDs      []int   `url:"statusId[],omitempty"`       // 状態のID
+	PriorityIDs    []int   `url:"priorityId[],omitempty"`     // 優先度のID
+	CategoryIDs    []int   `url:"categoryId[],omitempty"`     // カテゴリーのID
+	IssueTypeIDs   []int   `url:"issueTypeId[],omitempty"`    // 種別のID
+	AssigneeIDs    []int   `url:"assigneeId[],omitempty"`     // 担当者のID
+	ParentIssueIDs []int   `url:"parentIssueId[],omitempty"`  // 親課題のID
+	StartDateSince *string `url:"startDateSince[],omitempty"` // 開始日 (yyyy-MM-dd)
+	DueDateSince   *string `url:"dueDateSince,omitempty"`     // 期限日 (yyyy-MM-dd)
+	ParentChild    *int    `url:"parentChild,omitempty"`      // 親子課題の条件
+	Sort           *string `url:"sort,omitempty"`             // 課題一覧のソートに使用する属性名
+	Order          *string `url:"order,omitempty"`            // `asc` または `desc` 指定が無い場合は `desc`
+	Keyword        *string `url:"keyword,omitempty"`          // 検索キーワード
+	Count          *int    `url:"count,omitempty"`            // 取得上限 (1-100) 指定が無い場合は 20
+	offset         *int    `url:"offset,omitempty"`
+}
+
 // Get an issue.
 func (s *IssuesService) Get(issueKey string) (*Issue, *Response, error) {
 	u := "issues/" + issueKey
@@ -122,6 +143,22 @@ func (s *IssuesService) Delete(issueKey string) (*Response, error) {
 		return resp, err
 	}
 	return resp, nil
+}
+
+// Search issues.
+func (s *IssuesService) Search(request IssueSearchRequest) ([]*Issue, *Response, error) {
+	u, _ := addOptions("issues", request)
+	req, err := s.client.NewRequest("GET", u, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	issues := []*Issue{}
+	resp, err := s.client.Do(req, &issues)
+	if err != nil {
+		return nil, resp, err
+	}
+	return issues, resp, nil
 }
 
 func (r IssueRequest) makeValues() url.Values {

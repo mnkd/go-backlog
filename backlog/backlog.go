@@ -8,7 +8,10 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"reflect"
 	"strings"
+
+	"github.com/google/go-querystring/query"
 )
 
 // A Client manages communication with the Backlog API.
@@ -178,4 +181,27 @@ func sanitizeURL(uri *url.URL) *url.URL {
 		uri.RawQuery = params.Encode()
 	}
 	return uri
+}
+
+// addOptions adds the parameters in opt as URL query parameters to s. opt
+// must be a struct whose fields may contain "url" tags.
+// https://github.com/google/go-github/blob/99760a16213d6fdde13f4e477438f876b6c9c6eb/github/github.go#L212-L232
+func addOptions(s string, opt interface{}) (string, error) {
+	v := reflect.ValueOf(opt)
+	if v.Kind() == reflect.Ptr && v.IsNil() {
+		return s, nil
+	}
+
+	u, err := url.Parse(s)
+	if err != nil {
+		return s, err
+	}
+
+	qs, err := query.Values(opt)
+	if err != nil {
+		return s, err
+	}
+
+	u.RawQuery = qs.Encode()
+	return u.String(), nil
 }
