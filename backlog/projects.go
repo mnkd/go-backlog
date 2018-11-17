@@ -83,7 +83,7 @@ func (s *ProjectsService) ListCategories(projectKey string) ([]*Category, *Respo
 	return categories, resp, nil
 }
 
-// ListProjectUsers lists all users in the project.
+// ListUsers lists all users in the project.
 func (s *ProjectsService) ListUsers(projectKey string) ([]*User, *Response, error) {
 	u := "projects/" + projectKey + "/users"
 	req, err := s.client.NewRequest("GET", u, nil)
