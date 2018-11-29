@@ -42,6 +42,10 @@ type Issue struct {
 
 	IssueType  IssueType  `json:"issueType"`
 	Categories []Category `json:"category"`
+
+	// Backlog の仕様では Version と　Milestone は同じ型になる
+	Versions   []Version `json:"versions"`
+	Milestones []Version `json:"milestone"`
 }
 
 // IssueRequest represents a request to create/edit an issue.
@@ -55,6 +59,8 @@ type IssueRequest struct {
 	IssueTypeID   *int
 	AssigneeID    *int
 	ParentIssueID *int
+	VersionID     *int
+	MilestoneID   *int
 	StartDate     *string
 	DueDate       *string
 }
@@ -67,6 +73,8 @@ type IssueSearchRequest struct {
 	StatusIDs      []int   `url:"statusId[],omitempty"`       // 状態のID
 	PriorityIDs    []int   `url:"priorityId[],omitempty"`     // 優先度のID
 	CategoryIDs    []int   `url:"categoryId[],omitempty"`     // カテゴリーのID
+	VersionIDs     []int   `url:"versionId[],omitempty"`      // 課題の発生バージョンのID
+	MilestoneIDs   []int   `url:"milestoneId[],omitempty"`    // 課題のマイルストーンのID
 	IssueTypeIDs   []int   `url:"issueTypeId[],omitempty"`    // 種別のID
 	AssigneeIDs    []int   `url:"assigneeId[],omitempty"`     // 担当者のID
 	ParentIssueIDs []int   `url:"parentIssueId[],omitempty"`  // 親課題のID
@@ -177,6 +185,12 @@ func (r IssueRequest) makeValues() url.Values {
 	}
 	if r.CategoryID != nil {
 		v.Set("categoryId[]", fmt.Sprintf("%d", *r.CategoryID))
+	}
+	if r.VersionID != nil {
+		v.Set("versionId[]", fmt.Sprintf("%d", *r.VersionID))
+	}
+	if r.MilestoneID != nil {
+		v.Set("milestoneId[]", fmt.Sprintf("%d", *r.MilestoneID))
 	}
 	if r.Summary != nil {
 		v.Set("summary", *r.Summary)
