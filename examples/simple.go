@@ -54,6 +54,16 @@ func main() {
 			fmt.Printf("  %v\n", category.Name)
 		}
 
+		versions, _, err := client.Projects.ListVersions(project.ProjectKey)
+		if err != nil {
+			fmt.Printf("Error: %v\n", err)
+		}
+
+		fmt.Printf("Versions: \n")
+		for _, version := range versions {
+			fmt.Printf("  %v\n", version.Name)
+		}
+
 		users, _, err := client.Projects.ListUsers(project.ProjectKey)
 		if err != nil {
 			fmt.Printf("Error: %v\n", err)

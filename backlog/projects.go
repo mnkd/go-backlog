@@ -1,6 +1,9 @@
 package backlog
 
-import "net/url"
+import (
+	"net/url"
+	"time"
+)
 
 // ProjectsService is
 type ProjectsService service
@@ -26,6 +29,17 @@ type Category struct {
 	ID         int    `json:"id"`
 	Name       string `json:"name"`
 	ProjectKey string `json:"projectKey"`
+}
+
+// Version is Backlog version (mileston) in the Backlog project
+type Version struct {
+	ID             int       `json:"id"`
+	Name           string    `json:"name"`
+	ProjectKey     string    `json:"projectKey"`
+	Description    string    `json:"description"`
+	StartDate      time.Time `json:"startDate"`
+	ReleaseDueDate time.Time `json:"releaseDueDate"`
+	Archived       bool      `json:"archived"`
 }
 
 // User is Backlog user
@@ -81,6 +95,22 @@ func (s *ProjectsService) ListCategories(projectKey string) ([]*Category, *Respo
 		return nil, resp, err
 	}
 	return categories, resp, nil
+}
+
+// ListVersions lists all versions (milestones).
+func (s *ProjectsService) ListVersions(projectKey string) ([]*Version, *Response, error) {
+	u := "projects/" + projectKey + "/versions"
+	req, err := s.client.NewRequest("GET", u, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	versions := []*Version{}
+	resp, err := s.client.Do(req, &versions)
+	if err != nil {
+		return nil, resp, err
+	}
+	return versions, resp, nil
 }
 
 // ListUsers lists all users in the project.
