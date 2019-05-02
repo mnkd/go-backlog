@@ -14,7 +14,7 @@ Construct a new Backlog client. For example:
 ```go
 client := backlog.NewClient(nil, space, apiKey)
 
-// list all projects for youe Backlog space
+// list all projects for your Backlog space
 projects, _, err := client.Projects.ListAll()
 ```
 
